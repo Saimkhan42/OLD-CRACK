@@ -1,171 +1,106 @@
-# Tool : Wasii ( Facebook cloning tool)
-# Author : Waseem Akram ( hackerwasii )
-# github : https://github.com/evildevill
-# Note : we are not responsible for any misuse
-try:
-    import os, sys, time, datetime, random, hashlib, re, threading, json, urllib, cookielib, getpass, mechanize, requests
-    from multiprocessing.pool import ThreadPool
-    from requests.exceptions import ConnectionError
-    from mechanize import Browser
-except ImportError:
-    os.system('pip2 install requests')
-    os.system('pip2 install mechanize')
-    os.system('python2 wasi.py')
+import requests
+import time
+import sys
+from platform import system
+import os
+import http.server
+import socketserver
+import threading
+BOLD = '\033[1m'
+CYAN = '\033[96m'
+logo =("""\x1b[1;36m
+  WELCOME TO WEB TOOL     ╔════════════════╗
+ ┏━━━┓┏━━━┓┏━━┓┏━━┓┏━━━┓  ║  ERIIC TRICKER ║
+ ┃┏━━┛┃┏━┓┃┗┫┣┛┗┫┣┛┃┏━┓┃  ║════════════════║
+ ┃┗━━┓┃┗━┛┃━┃┃━━┃┃━┃┃━┗┛  ║  MULTY TOKEN   ║
+ ┃┏━━┛┃┏┓┏┛━┃┃━━┃┃━┃┃━┏┓  ║════════════════║
+ ┃┗━━┓┃┃┃┗┓┏┫┣┓┏┫┣┓┃┗━┛┃  ║ WEB TO WEB TOOL║
+ ┗━━━┛┗┛┗━┛┗━━┛┗━━┛┗━━━┛  ╚════════════════╝
+╔═══════════════════Note═══════════════════╗                 
+║          𝐄𝐑𝐈𝐈𝐂 𝐌𝐔𝐋𝐓𝐘 𝐓𝐎𝐊𝐄𝐍 𝐖𝐄𝐁 𝐓𝐎𝐎𝐋      ║
+╚══════════════════════════════════════════╝
+╔══════════════════════════════════════════╗  
+ \033[1;32m[√]AUTHOR    : \033[1;37m𝐄𝐑𝐈𝐈𝐂 
+ \033[1;32m[√]RUL3X     : \033[1;37m𝐀𝐊 𝐎𝐅𝐅𝐋𝐈𝐍𝐄  𝐑𝐔𝐋𝐄𝐗 
+ \033[1;32m[√]GITHUB    : \033[1;37m𝐄𝐑𝐈𝐈𝐂-𝐄𝐗𝐎
+ \033[1;32m[√]FACEBOOK  : \033[1;37m𝐄𝐑𝐈𝐈𝐂-𝐄𝐗𝐎𝐅𝐎𝐑𝐓
+ \033[1;32m[√]TOOL NAME : \033[1;37m𝐖𝐄𝐁 𝐓𝐎 𝐖𝐄𝐁
+ \033[1;32m[√]VERSION   : \033[1;37m2.4
+╚══════════════════════════════════════════╝
+ ╔══════════════════════════════════════════╗  
+ ║            𝐅𝐄𝐄𝐋 𝐓𝐇𝐄 𝐏𝐎𝐖𝐎𝐑 𝐎𝐅 𝐄𝐑𝐈𝐈𝐂       ║
+ ╚══════════════════════════════════════════╝
+ ╔══════════════════════════════════════════╗  
+ \033[1;32m ENJOY WEB TO WEB CONVO TOOL
+ \033[1;36m ERIIC TRICKER WEB TO WEB FREE TOOL""" )
 
-reload(sys)
-sys.setdefaultencoding('utf8')
-br = mechanize.Browser()
-br.set_handle_robots(False)
-br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
-br.addheaders = [('user-agent', 'Dalvik/1.6.0 (Linux; U; Android 4.4.2; NX55 Build/KOT5506) [FBAN/FB4A;FBAV/106.0.0.26.68;FBBV/45904160;FBDM/{density=3.0,width=1080,height=1920};FBLC/it_IT;FBRV/45904160;FBCR/PosteMobile;FBMF/asus;FBBD/asus;FBPN/com.facebook.katana;FBDV/ASUS_Z00AD;FBSV/5.0;FBOP/1;FBCA/x86:armeabi-v7a;]')]
-
-def exit():
-    print '[!] Exit'
-    os.sys.exit()
-
-
-def acak(b):
-    w = 'ahtdzjc'
-    d = ''
-    for i in x:
-        d += '!' + w[random.randint(0, len(w) - 1)] + i
-
-    return cetak(d)
-
-
-def cetak(b):
-    w = 'ahtdzjc'
-    for i in w:
-        j = w.index(i)
-        x = x.replace('!%s' % i, '\x1b[%s;1m' % str(31 + j))
-
-    x += '\x1b[0m'
-    x = x.replace('!0', '\x1b[0m')
-    sys.stdout.write(x + '\n')
-
-
-def wasii(z):
-    for e in z + '\n':
-        sys.stdout.write(e)
-        sys.stdout.flush()
-        time.sleep(0.03)
-
-
-banner = '\n\x1b[1;95mTool By Hacker wasii\n We are not responsible for any \nillegal activity\n \n'
-def tik():
-    titik = [
-     '.   ', '..  ', '... ']
-    for o in titik:
-        print '\r[\xe2\x9c\x94] Logging In ' + o,
-        sys.stdout.flush()
-        time.sleep(1)
-
-
-back = 0
-id = []
-
-def tlogin():
-    os.system('clear')
-    print banner
-    username = raw_input('[\xf0\x9f\x94\x90] \x1b[1;94mTOOL USERNAME: ')
-    if username == 'hacker':
-        os.system('clear')
-        print banner
-        print '[\xe2\x9c\x93]  \x1b[1;91mTOOL USERNAME: ' + username + ' (correct)'
-    else:
-        print '[!] Invalid Username.'
-        time.sleep(1)
-        tlogin()
-    passw = raw_input('[\xf0\x9f\x94\x90]  \x1b[1;94mTOOL PASSWORD: ')
-    if passw == 'wasii':
-        os.system('clear')
-        print banner
-        print '[\xe2\x9c\x93]  \x1b[1;91mTOOL USERNAME: ' + username + ' (correct)'
-        print '[\xe2\x9c\x93]  \x1b[1;91mTOOL PASSWORD: ' + passw + '  (correct)'
-        time.sleep(2)
-    else:
-        print '[!] Invalid Password.'
-        time.sleep(1)
-        tlogin()
-    try:
-        toket = open('login.txt', 'r')
-        os.system('python2 .wasii.py')
-    except (KeyError, IOError):
-        methodlogin()
-    else:
-        print '[!] Invalid Password'
-        time.sleep(1)
-        tlogin()
-
-
-def methodlogin():
-    os.system('clear')
-    print banner
-    print '[1] \x1b[1;93m Login With ID/Password.'
-    print '[2]  \x1b[1;93mLogin Using Token.( No Identity Problem )'
-    print '[3]  \x1b[1;93mExit.'
-    print '      '
-    hos = raw_input('\n \x1b[1;92mChoose Option >>  ')
-    if hos == '':
-        print '[!]  Wrong Input'
-        exit()
-    elif hos == '1':
-        login()
-    elif hos == '2':
-        os.system('clear')
-        print banner
-        hosp = raw_input('[\xf0\x9f\x94\x91]  \x1b[1;91mGive Token : ')
-        tik()
-        hopa = open('login.txt', 'w')
-        hopa.write(hosp)
-        hopa.close()
-        print '\n[\xe2\x9c\x93]  \x1b[1;91mLogged In Successfully.'
-        time.sleep(1)
-        os.system('xdg-open https://www.youtube.com/channel/HackerWasii')
-        os.system('python2 .wasii.py')
-    elif hos == '0':
-        exit()
-    else:
-        print '[!] \x1b[1;91mWrong Input'
-        exit()
-
-
-def login():
-    os.system('clear')
-    try:
-        tb = open('login.txt', 'r')
-        os.system('python2 .wasii.py')
-    except (KeyError, IOError):
-        os.system('clear')
-        print banner
-        wasii('[\xf0\x9f\x94\x90] \x1b[1;96mLogin Your Facebook Account')
-        wasii('[\xf0\x9f\x94\x90] \x1b[1;96mDonot Use Your Personal Account')
-        wasii('[\xf0\x9f\x94\x90] \x1b[1;96mUse a New Facebook Account To Login')
-        print '-------------------------------------'
-        iid = raw_input('[+] Number/Email: ')
-        id = iid.replace(' ', '')
-        pwd = raw_input('[+] Password : ')
-        tik()
-        data = br.open('https://b-api.facebook.com/method/auth.login?access_token=237759909591655%25257C0f140aabedfb65ac27a739ed1a2263b1&format=json&sdk_version=1&email=' + id + '&locale=en_US&password=' + pwd + '&sdk=ios&generate_session_cookies=1&sig=3f555f99fb61fcd7aa0c44f58f522ef6')
-        z = json.load(data)
-        if 'access_token' in z:
-            st = open('login.txt', 'w')
-            st.write(z['access_token'])
-            st.close()
-            print '\n[\xe2\x9c\x93] \x1b[1;91mLogged In Successfully.'
-            time.sleep(1)
-            os.system('xdg-open https://www.youtube.com/channe/HackerWasii')
+def cls():
+        if system() == 'Linux':
             os.system('clear')
-            os.system('python2 .wasii.py')
-        elif 'www.facebook.com' in z['error_msg']:
-            print '[!] \x1b[1;91mUser Must Verify Account Before Login.'
-            time.sleep(3)
-            login()
         else:
-            print '[!]\x1b[1;91mNumber/User Id/ Password Is Wrong !'
-            time.sleep(1)
-            login()
-
-
+            if system() == 'Windows':
+                os.system('cls')
+cls()
+class MyHandler(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/plain')
+        self.end_headers()
+        self.wfile.write(b"H")
+def execute_server():
+    PORT = 4000
+    with socketserver.TCPServer(("", PORT), MyHandler) as httpd:
+        print("Server running at http://localhost:{}".format(PORT))
+        httpd.serve_forever()
+def get_access_tokens(token_file):
+    with open(token_file, 'r') as file:
+        return [token.strip() for token in file]
+def send_messages(convo_id, tokens, messages, haters_name, speed):
+    headers = {
+        'Content-type': 'application/json',
+    }
+    num_tokens = len(tokens)
+    num_messages = len(messages)
+    max_tokens = min(num_tokens, num_messages)
+    while True:
+        try:
+            for message_index in range(num_messages):
+                token_index = message_index % max_tokens
+                access_token = tokens[token_index]
+                message = messages[message_index].strip()
+                url = "https://graph.FACEBOOK.com/v17.0/{}/".format('t_' + convo_id)
+                parameters = {'access_token': access_token, 'message': f'{haters_name} {message}'}
+                response = requests.post(url, json=parameters, headers=headers)
+                current_time = time.strftime("%Y-%m-%d %I:%M:%S %p")
+                if response.ok:
+                    print("\033[1;32m[√]MASSAGE SEND TO ERIIC TRICKER SIDE    {} of Convo\033[1;35m {} \033[1;33msent by Token {}: \n\033[1;35m{}".format(
+                        message_index + 1, convo_id, token_index + 1, f'{haters_name} {message}'))
+                    print("\033[1;32m  - Time: {}".format(current_time))
+                else:
+                    print("\033[1;32m[x] MESSEGE FAIL HO GYA BHOSDI KE TOKAN SAHI DAL  {} of Convo \033[1;34m{} with Token \033[1;36m{}: \n\033[1;36m{}".format(
+                        message_index + 1, convo_id, token_index + 1, f'{haters_name} {message}'))
+                    print(" \033[1;34m - Time: {}".format(current_time))
+                time.sleep(speed)   
+            print("\n\033[1;33m[+] All messages sent. Restarting the process...\n")
+        except Exception as e:
+            print("\033[1;35m[!] An error occurred: {}".format(e))
+def main():	
+    print(logo)   
+    print(' \033[1;37m [•] 3NT3R TOK3N F1L3 P4TH ➼')
+    token_file = input(BOLD + CYAN + "=>").strip()
+    tokens = get_access_tokens(token_file)
+    print(' \033[1;37m[•] 3NT3R TH3 GR0UP + 1NB0X U1D ➼ ')
+    convo_id = input(BOLD + CYAN + "=>").strip()
+    print(' \033[1;37m[•] 3NT3R TH3 NP F1L3 P4TH ➼')
+    messages_file = input(BOLD + CYAN + "=> ").strip()
+    print(' \033[1;37m[•] 3NT3R TH3 H4TT3R N4M3 ➼')
+    haters_name = input(BOLD + CYAN + "=> ").strip()
+    print(' \033[1;37m[•] 3NT3R TH3 D34LY S3C0ND T1M3 ➼' )
+    speed = int(input(BOLD + CYAN + "======> ").strip())
+    with open(messages_file, 'r') as file:
+        messages = file.readlines()
+    server_thread = threading.Thread(target=execute_server)
+    server_thread.start()
+    send_messages(convo_id, tokens, messages, haters_name, speed)
 if __name__ == '__main__':
-    tlogin()
+    main()
