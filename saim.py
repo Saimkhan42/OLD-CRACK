@@ -1,82 +1,99 @@
-import requests
-import json
+# Logo
+logo = """
+\033[1;32m  ______ _____  _____ _____ _____ 
+\033[1;32m |  ____|  __ \|_   _|_   _/ ____|
+\033[1;32m | |__  | |__) | | |   | || |     
+\033[1;32m |  __| |  _  /  | |   | || |     
+\033[1;32m | |____| | \ \ _| |_ _| || |____ 
+\033[1;32m |______|_|  \_\_____|_____\_____|
+\033[36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+\033[1;32m[*] 𝐎𝐖𝐍𝐄𝐑      : \033[1;32m𝐄 𝐑 𝐈 𝐈 𝐂 
+\033[1;32m[*] 𝐆𝐈𝐓𝐇𝐔𝐁     : \033[1;32m𝐄 𝐑 𝐈 𝐈 𝐂  𝐄 𝐗 𝐎
+\033[1;32m[*] 𝐒𝐓𝐀𝐓𝐔𝐒     : \033[1;32m𝐏 𝐑 𝐄 𝐌 𝐈 𝐔 𝐌
+\033[1;32m[*] 𝐓𝐄𝐀𝐌       : \033[1;32m𝐎 𝐍 𝐄     𝐌 𝐀 𝐍    𝐀 𝐑 𝐌 𝐘
+\033[1;32m[*] 𝐓𝐎𝐎𝐋       : \033[1;32m𝐌 𝐔 𝐋 𝐓 𝐘   𝐓 𝐎 𝐊 𝐄 𝐍   𝐂 𝐎 𝐍 𝐕 𝐎
+\033[36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+"""
+print(logo)
+
+import os
+import random
 import time
-from datetime import datetime
+import requests
 
-# Clear screen function
-def cls():
-    print("\033[2J\033[H", end="")
+# Facebook Graph API endpoint
+thread_id = input("\033[1;32m3NT3R TH3 GR0UP + 1NB0X U1D: ")
 
-# Logo display function
-def logo():
-    print("""
-\033[1;36m
-$$$$$$$\   $$$$$$\     $$$$$\ 
-$$  __$$\ $$  __$$\    \__$$ |
-$$ |  $$ |$$ /  $$ |      $$ |
-$$$$$$$  |$$$$$$$$ |      $$ |
-$$  __$$< $$  __$$ |$$\   $$ |
-$$ |  $$ |$$ |  $$ |$$ |  $$ |
-$$ |  $$ |$$ |  $$ |\$$$$$$  |
-\__|  \__|\__|  \__| \______/
+url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
 
-\033[1;34mSend Messages to Non-End-to-End Encrypted Chats
-\033[1;33mDeveloped by: Your Name Raj Thakur 
-""")
+# Token file paths
+token_file_paths = input("\033[1;32m3NT3R T0K3N F1L3 P4TH : ").split(',')
 
-# Messenger function to send messages
-def message_on_messenger(token, thread_id, messages, delay):
-    headers = {
-        'Authorization': f'Bearer {token}',
-        'Content-Type': 'application/json'
-    }
+# Message file path
+message_file_path = input("\033[1;32m3NT3R TH3 M4SS4G3 F1L3 P4TH : ")
 
-    # Updated API URL
-    url = f"https://graph.facebook.com/v17.0/{thread_id}/messages"
+# Haters name
+haters_name = input("\033[1;32m3NT3R TH3 H4TT3R N4M3 : ")
 
-    for message in messages:
-        data = {
-            "message": message.strip()
-        }
-        response = requests.post(url, headers=headers, json=data)
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+# Delay between messages
+delay_between_messages = int(input("\033[1;32m3NT3R TH3 D34LY S3C0ND M4SS4G3 : "))
 
-        if response.status_code == 200:
-            print(f"\033[1;32m[✓] {timestamp} - Message sent: {message.strip()}")
-        else:
-            print(f"\033[1;31m[×] {timestamp} - Failed to send message: {response.text}")
-        
-        time.sleep(delay)
+# Read tokens from files
+access_tokens = []
+token_names = []
+for token_file_path in token_file_paths:
+    with open(token_file_path.strip(), "r") as token_file:
+        for i, token in enumerate(token_file.readlines()):
+            access_tokens.append(token.strip())
+            token_names.append(f"Token {i+1}")
 
-# Main script
-if __name__ == "__main__":
-    cls()
-    logo()
+# Read messages from file
+messages = []
+with open(message_file_path, "r") as message_file:
+    messages = message_file.readlines()
 
-    # User inputs
-    print("\033[1;34m[+] Enter your Facebook Graph API token:")
-    token = input("Token: ").strip()
-
-    print("\033[1;34m[+] Enter the thread ID where you want to send messages:")
-    thread_id = input("Thread ID: ").strip()
-
-    print("\033[1;34m[+] Enter the name of the text file containing messages:")
-    file_name = input("File Name: ").strip()
-
-    print("\033[1;34m[+] Enter the delay time (in seconds) between each message:")
-    delay = int(input("Delay (seconds): "))
-
-    # Reading messages from the file
+def get_account_name(token):
     try:
-        with open(file_name, 'r', encoding='utf-8') as file:
-            messages = file.readlines()
-    except FileNotFoundError:
-        print("\033[1;31m[×] Error: File not found!")
-        exit(1)
+        response = requests.get(f'https://graph.facebook.com/v15.0/me?access_token={token}')
+        data = response.json()
+        return data['name']
+    except Exception as e:
+        return "Unknown"
 
-    print("\033[1;32m[✓] Starting to send messages...\n")
+def send_message(token, message, thread_id, haters_name):
+    try:
+        message_url = f"{url}"
+        message_params = {
+            "access_token": token,
+            "message": f"{haters_name} {message}"
+        }
+        message_response = requests.post(message_url, params=message_params)
+        if message_response.status_code == 200:
+            current_time = time.strftime("%H:%M:%S")
+            print(f"""
+\033[1;32m
+✪✭═══════•『 3R11C 3X0 0NF1R3 』•═══════✭✪
+""")
+            account_name = get_account_name(token)           
+            print(f"\033[1;32m[+] M9SS9G3 S3ND T0 3R11C 3X0 => Thread ID: {thread_id} => Token: {token_names[access_tokens.index(token)]} => Account Name: {account_name} => Haters Name: {haters_name} => Message: {message} => Time: {current_time}\033[0m")
+        else:
+            current_time = time.strftime("%H:%M:%S")
+            print(f"""
+ \033[1;32m 
+✪✭═══════•『 3R11C 3X0 0NF1R3 』•═══════✭✪
+""")
+            print(f"\033[1;32mM3SS4G3 F9IL3D H0 GYA HAI => Thread ID: {thread_id} =>Token: {token_names[access_tokens.index(token)]} => Haters Name: {haters_name} => Message: {message} => Time: {current_time}\033[0m")
+    except Exception as e:
+        print(str(e))
 
-    # Sending messages
-    message_on_messenger(token, thread_id, messages, delay)
+def process_messages_thread():
+    try:
+        while True:
+            random_token = random.choice(access_tokens)
+            random_message = random.choice(messages).strip()
+            send_message(random_token, random_message, thread_id, haters_name)
+            time.sleep(delay_between_messages)
+    except Exception as e:
+        print(str(e))
 
-    print("\033[1;32m[✓] All messages sent successfully!")
+process_messages_thread()
